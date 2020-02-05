@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -12,9 +13,15 @@ vector<vector<int>> getMatrixAdjacency(int n, vector<vector<int>> &heights);
 
 vector<vector<int>> getMatrixIncidence(int n, vector<vector<int>> &heights);
 
+vector<vector<int>> getMatrixAdjacencyOriented(int n, vector<vector<int>> &heights);
+
+vector<vector<int>> getMatrixIncidenceOriented(int n, vector<vector<int>> &heights);
+
 void showMatrix(vector<vector<int>> matrix);
 
 vector<int> getDegreeOfVecticles(vector<vector<int>> matrixOfInc);
+
+void getHalfDegree(vector<vector<int>> matrixOfAdjacency);
 
 void showIsolated(vector<int> degrees);
 
@@ -46,6 +53,16 @@ int main() {
             int n, m;
             vector<vector<int>> heights;
             getGraf(n, m, heights, part);
+
+            vector<vector<int>> matrixOfAdjacency = getMatrixAdjacencyOriented(n, heights);
+            cout << "Matrix of adjacency: " << endl;
+            showMatrix(matrixOfAdjacency);
+
+            vector<vector<int>> matrixOfInc = getMatrixIncidenceOriented(n, heights);
+            cout << "Matrix of incidence: " << endl;
+            showMatrix(matrixOfInc);
+
+            getHalfDegree(matrixOfAdjacency);
         }
             break;
         default:
@@ -104,13 +121,13 @@ vector<vector<int>> getMatrixAdjacency(int n, vector<vector<int>> &heights) {
 void showMatrix(vector<vector<int>> matrix) {
     cout << " \\ ";
     for (int k = 0; k < matrix[0].size(); ++k) {
-        cout << k + 1 << " |";
+        cout << setw(2) << k + 1 << " |";
     }
     cout << endl;
     for (int i = 0; i < matrix.size(); ++i) {
         cout << i + 1 << " |";
         for (int j : matrix[i]) {
-            cout << j << " |";
+            cout << setw(2) << j << " |";
         }
         cout << endl;
     }
@@ -138,12 +155,12 @@ vector<int> getDegreeOfVecticles(vector<vector<int>> matrixOfInc) {
     vector<int> degree;
     cout << "Degree of Vecticles:" << endl;
     for (int i = 0; i < matrixOfInc.size(); ++i) {
-        int summa = 0;
+        int sum = 0;
         for (int j : matrixOfInc[i]) {
-            summa += j;
+            sum += j;
         }
-        degree.push_back(summa);
-        cout << i + 1 << " - " << summa << endl;
+        degree.push_back(sum);
+        cout << i + 1 << " - " << sum << endl;
     }
 
     bool isUniform = true;
@@ -155,7 +172,7 @@ vector<int> getDegreeOfVecticles(vector<vector<int>> matrixOfInc) {
     }
 
     if (isUniform) {
-        cout << "Graf is uniform. Degree " << degree[0];
+        cout << "Graph is uniform. Degree " << degree[0];
     }
     return degree;
 }
@@ -177,3 +194,79 @@ void showIsolated(vector<int> degrees) {
         }
     }
 }
+
+vector<vector<int>> getMatrixAdjacencyOriented(int n, vector<vector<int>> &heights) {
+    vector<vector<int>> matrix;
+    for (int i = 0; i < n; ++i) {
+        vector<int> temp;
+        temp.reserve(n);
+        for (int j = 0; j < n; ++j) {
+            temp.push_back(0);
+        }
+        matrix.push_back(temp);
+    }
+
+    for (auto &height : heights) {
+        matrix[height[0] - 1][height[1] - 1] = 1;
+    }
+    return matrix;
+}
+
+vector<vector<int>> getMatrixIncidenceOriented(int n, vector<vector<int>> &heights) {
+    vector<vector<int>> matrix;
+    for (int i = 0; i < n; ++i) {
+        vector<int> temp;
+        temp.reserve(heights.size());
+        for (int j = 0; j < heights.size(); ++j) {
+            temp.push_back(0);
+        }
+        matrix.push_back(temp);
+    }
+
+    for (int k = 0; k < heights.size(); ++k) {
+        if (heights[k][0] != heights[k][1]) {
+            matrix[heights[k][0] - 1][k] = 1;
+            matrix[heights[k][1] - 1][k] = -1;
+        } else
+            matrix[heights[k][0] - 1][k] = 2;
+    }
+    return matrix;
+}
+
+void getHalfDegree(vector<vector<int>> matrixOfAdjacency) {
+    cout << "Half degree coming out: " << endl;
+
+    vector<int> sums;
+
+    for (int i = 0; i < matrixOfAdjacency.size(); ++i) {
+        int sum = 0;
+        for (int j : matrixOfAdjacency[i]) {
+            sum += j;
+        }
+        sums.push_back(sum);
+        cout << i + 1 << " - " << sum << endl;
+    }
+
+    cout << "Half degree coming in: " << endl;
+    for (int k = 0; k < matrixOfAdjacency.size(); ++k) {
+        int sum = 0;
+        for (int i = 0; i < matrixOfAdjacency[k].size(); ++i) {
+            sum += matrixOfAdjacency[i][k];
+        }
+        cout << k + 1 << " - " << sum << endl;
+    }
+
+    bool isUniform = true;
+    for (int l = 1; l < sums.size(); ++l) {
+        if (sums[0] != sums[l]) {
+            isUniform = false;
+            break;
+        }
+    }
+
+    if (isUniform)
+        cout << "Is uniform!";
+    else
+        cout << "Isn`t uniform!";
+}
+
