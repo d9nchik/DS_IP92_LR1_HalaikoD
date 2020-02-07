@@ -236,14 +236,13 @@ vector<vector<int>> getMatrixIncidenceOriented(int n, vector<vector<int>> &heigh
 void getHalfDegree(vector<vector<int>> matrixOfAdjacency) {
     cout << "Half degree coming out: " << endl;
 
-    vector<int> sums;
+
 
     for (int i = 0; i < matrixOfAdjacency.size(); ++i) {
         int sum = 0;
         for (int j : matrixOfAdjacency[i]) {
             sum += j;
         }
-        sums.push_back(sum);
         cout << i + 1 << " - " << sum << endl;
     }
 
@@ -255,18 +254,5 @@ void getHalfDegree(vector<vector<int>> matrixOfAdjacency) {
         }
         cout << k + 1 << " - " << sum << endl;
     }
-
-    bool isUniform = true;
-    for (int l = 1; l < sums.size(); ++l) {
-        if (sums[0] != sums[l]) {
-            isUniform = false;
-            break;
-        }
-    }
-
-    if (isUniform)
-        cout << "Is uniform!";
-    else
-        cout << "Isn`t uniform!";
 }
 
