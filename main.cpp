@@ -99,6 +99,19 @@ void getGraf(int &n, int &m, vector<vector<int>> &heights, int answer) {
     for (int i = 0; i < m; ++i) {
         cout << heights[i][0] << " " << heights[i][1] << endl;
     }
+
+    for (int j = 0; j < heights.size(); ++j) {
+        int minimum = j;
+        for (int k = 0; k < heights.size(); k++) {
+            if (heights[minimum][0] > heights[k][0])
+                minimum = k;
+        }
+
+        vector<int> temp;
+        temp = heights[minimum];
+        heights[minimum] = heights[j];
+        heights[j] = temp;
+    }
 }
 
 vector<vector<int>> getMatrixAdjacency(int n, vector<vector<int>> &heights) {
@@ -235,7 +248,6 @@ vector<vector<int>> getMatrixIncidenceOriented(int n, vector<vector<int>> &heigh
 
 void getHalfDegree(vector<vector<int>> matrixOfAdjacency) {
     cout << "Half degree coming out: " << endl;
-
 
 
     for (int i = 0; i < matrixOfAdjacency.size(); ++i) {
